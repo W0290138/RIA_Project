@@ -1,6 +1,4 @@
 $(function() {
-    
-    
 
 	//when the select all checkbox is clicked, toggle all the checkboxes
 	$(".header-table .checkbox").click(function() {
@@ -48,6 +46,16 @@ $(function() {
 		return row;
 	}
 
+    //Here we are going to make sure there are no same names
+    function CheckNames()
+    {
+        $.post("php/getFiles.php?XDEBUG_SESSION_START=xdebug", function(data) {			JSON.parse(data).forEach(function(file) {
+				
+			}, "json");
+		});
+    }
+    
+    
 	//populate the table with the most up-to-date rows
 	function generateTableRows() {
 		$.post("php/getFiles.php?XDEBUG_SESSION_START=xdebug", function(data) {
@@ -106,8 +114,7 @@ $(function() {
 		e.stopPropagation();
 		//TODO: show a loader
         $("#loader").show();
-        
-        
+        debugger;
         
 		//get this row's id and delete the row
 		var id = $(this).closest("tr").data("id");
@@ -115,14 +122,15 @@ $(function() {
 		//delete the actual file
 		deleteFiles([id], function(e) {
 			//TODO: hide a loader here
+            
+            $("#loader").hide();
 		});
 	});
 
 	//for the group delete button click
 	$(".group-buttons .delete").click(function() {
-		//TODO: show a loader
+		
         $("#loader").show();
-        debugger;
         
 		//push all the active ids to an array and remove the rows
 		var ids = [];
@@ -134,7 +142,8 @@ $(function() {
 		});
 		//delete them all
 		deleteFiles(ids, function(e) {
-			//TODO: hide a loader here
+			
+            $("#loader").hide();
 		});
 	});
 
@@ -145,20 +154,24 @@ $(function() {
 
 	//on click of download buttons in table rows
 	$(document).on('click', '.uploader-table .download', function(e) {
+        debugger;
 		e.stopPropagation();
 		//TODO: show a loader
-        $("#loader").show()
+        $("#loader").show();
         
 		//get this row's id
 		var id = $(this).closest("tr").data("id");
 		//download the file
 		downloadFiles([id], function(e) {
 			//TODO: hide a loader here
+            //It never hits here so i put hide in outside function
 		});
+        $("#loader").hide();
 	});
 
 	$(".group-buttons .download").click(function() {
 		//push all the ids to an array
+        
 		var ids = [];
 		$(".uploader-table tbody").find("tr").each(function(i, row) {
 			if (!$(row).find(".checkbox").hasClass("unchecked"))
@@ -175,8 +188,7 @@ $(function() {
 			//don't submit the form!
 			e.preventDefault();
 			//TODO: show a loader
-            $("#loader").show()
-            
+            $("#loader").show();
 			//get this input
 			var nameInput = e.target;
 			//push it's id an name to arrays
@@ -189,6 +201,7 @@ $(function() {
 			//update the file
 			updateFiles(ids, names, function(e) {
 				//TODO: hide a loader here
+                $("#loader").hide();
 			});
 		}
 	});

@@ -105,7 +105,8 @@ $(function() {
 	$(document).on('click', '.uploader-table .delete', function(e) {
 		e.stopPropagation();
 		//TODO: show a loader
-        $("#loader").show()
+        $("#loader").show();
+        
         
         
 		//get this row's id and delete the row
@@ -120,7 +121,8 @@ $(function() {
 	//for the group delete button click
 	$(".group-buttons .delete").click(function() {
 		//TODO: show a loader
-        $("#loader").show()
+        $("#loader").show();
+        debugger;
         
 		//push all the active ids to an array and remove the rows
 		var ids = [];

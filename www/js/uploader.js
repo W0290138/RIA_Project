@@ -1,4 +1,6 @@
 $(function() {
+    
+    
 
 	//when the select all checkbox is clicked, toggle all the checkboxes
 	$(".header-table .checkbox").click(function() {
@@ -103,6 +105,9 @@ $(function() {
 	$(document).on('click', '.uploader-table .delete', function(e) {
 		e.stopPropagation();
 		//TODO: show a loader
+        $("#loader").show()
+        
+        
 		//get this row's id and delete the row
 		var id = $(this).closest("tr").data("id");
 		$(this).closest("tr").remove();
@@ -115,6 +120,8 @@ $(function() {
 	//for the group delete button click
 	$(".group-buttons .delete").click(function() {
 		//TODO: show a loader
+        $("#loader").show()
+        
 		//push all the active ids to an array and remove the rows
 		var ids = [];
 		$(".uploader-table tbody").find("tr").each(function(i, row) {
@@ -138,6 +145,8 @@ $(function() {
 	$(document).on('click', '.uploader-table .download', function(e) {
 		e.stopPropagation();
 		//TODO: show a loader
+        $("#loader").show()
+        
 		//get this row's id
 		var id = $(this).closest("tr").data("id");
 		//download the file
@@ -164,6 +173,8 @@ $(function() {
 			//don't submit the form!
 			e.preventDefault();
 			//TODO: show a loader
+            $("#loader").show()
+            
 			//get this input
 			var nameInput = e.target;
 			//push it's id an name to arrays

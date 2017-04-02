@@ -158,6 +158,12 @@ table input[type="text"] {
 }
 
 
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> a2f2a21eb318eeb54dc871b1f3ea8c25586f129b
 /*Loader Stuff*/
 #loader
 {
@@ -187,3 +193,7 @@ table input[type="text"] {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> a2f2a21eb318eeb54dc871b1f3ea8c25586f129b

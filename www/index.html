@@ -12,6 +12,9 @@
 
 <body>
     <h1>Super Cool Awesome File Uploader</h1>
+     <div id="loader">
+            <div class="loader"></div>
+        </div>
     <div class="uploader-container">
         <div class="uploader-border"></div>
         <table class="header-table">
@@ -148,19 +151,23 @@
             //on click of delete buttons in table rows
             $(document).on('click', '.uploader-table .delete', function(e) {
                 e.stopPropagation();
-                //TODO: show a loader
+                $("#loader").show()
+                
+                
                 //get this row's id and delete the row
                 var id = $(this).closest("tr").data("id");
                 $(this).closest("tr").remove();
                 //delete the actual file
                 deleteFiles([id], function(e) {
-                    //TODO: hide a loader here
+                    $("#loader").hide()
                 });
             });
 
             //for the group delete button click
             $(".group-buttons .delete").click(function() {
-                //TODO: show a loader
+                
+                $("#loader").show()
+                
                 //push all the active ids to an array and remove the rows
                 var ids = [];
                 $(".uploader-table tbody").find("tr").each(function(i, row) {
@@ -171,7 +178,9 @@
                 });
                 //delete them all
                 deleteFiles(ids, function(e) {
-                    //TODO: hide a loader here
+                
+                    
+                    $("#loader").hide()
                 });
             });
 
@@ -183,12 +192,13 @@
             //on click of download buttons in table rows
             $(document).on('click', '.uploader-table .download', function(e) {
                 e.stopPropagation();
-                //TODO: show a loader
-                //get this row's id
+           
+                $("#loader").show()
                 var id = $(this).closest("tr").data("id");
                 //download the file
                 downloadFiles([id], function(e) {
-                    //TODO: hide a loader here
+                    
+                    $("#loader").hide()
                 });
             });
 
@@ -209,7 +219,10 @@
                 if (e.which == 13 && e.target.classList.contains("name-input")) {
                     //don't submit the form!
                     e.preventDefault();
-                    //TODO: show a loader
+                    
+                    $("#loader").show()
+                    
+                    
                     //get this input
                     var nameInput = e.target;
                     //push it's id an name to arrays
@@ -221,10 +234,14 @@
                     names.push($(e.target).val() + $(e.target).data("extension"));
                     //update the file
                     updateFiles(ids, names, function(e) {
-                        //TODO: hide a loader here
+                        
+                        
+                        $("#loader").hide()
                     });
                 }
             });
+            
+            
 
         });
 

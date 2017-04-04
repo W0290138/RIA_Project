@@ -161,7 +161,9 @@ $(function() {
       }
 		});
 		//download them all as a zip
-		downloadFiles(ids);
+    if(ids.length > 0){
+      downloadFiles(ids);
+    }
     $("#spinner").toggleClass("hidden");
 	});
   

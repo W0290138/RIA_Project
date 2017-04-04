@@ -6,7 +6,7 @@ $(function() {
 	function fileTemplate(file) {
 		var row = [
         `<div class="col-lg-4 col-sm-6 FileParent" data-id="${file.id}">`,
-        `  <div class="file-box fileDL fileBlock1">`,
+        `  <div class="file-box fileDL">`,
         `    <h1 class="fileName">${file.name}</h1>`,
         `    <h1 class="fileType"><i class="fa ${file.icon}" aria-hidden="true"></i></h1>`,
         `    <div class="file-box-caption">`,
@@ -23,7 +23,6 @@ $(function() {
 		].join("\n");
 		return row;
 	}//E N D  F i l e  T e m p l a t e
-  
   
   /*
   ----------------  P o p u l a t e  f i l e s  f r o m  D B ----------------
@@ -52,11 +51,27 @@ $(function() {
 	}
   
 	function deleteFiles(rowIDs, callback) {
-		$.post("php/deleteFile.php?XDEBUG_SESSION_START=xdebug", {
-			rowIDs: rowIDs
-		}, function(e) {
-			callback(e);
-		});
+    if(rowIDs.length > 1){
+      var message = "Really delete " + rowIDs.length + " files?"
+    }else{
+      var message = "Are you sure you want to delete this file?"
+    }
+    
+    vex.dialog.confirm({
+    message: message,
+    callback: function (value) {
+        if (value) {
+            $.post("php/deleteFile.php?XDEBUG_SESSION_START=xdebug", {
+              rowIDs: rowIDs,
+            }, function(e){
+              generateTableRows();
+              $("#spinner").toggleClass("hidden");
+            });
+        }else{
+          $("#spinner").toggleClass("hidden");
+        } 
+      }
+    })
 	}
 
 	function updateFiles(rowIDs, fileNames, callback) {
@@ -66,8 +81,12 @@ $(function() {
 		}, function(e) {
 			callback(e);
 		});
-	}
+	}//E N D  C R U D H e l p e r  f u n c t i o n s
   
+  
+  /*
+  ---------------- R e n a m e  s u p p o r t ----------------
+  */
   //when a key is pressed
 	$(document).keypress(function(e) {
 		//if it is the enter key
@@ -91,7 +110,12 @@ $(function() {
 			});
 		}
 	});
-  //E N D  C R U D H e l p e r  f u n c t i o n s
+  //reset the value on mouse out - only one name can be changed at a time. Changes are lost if not saved
+  $(document).on('mouseleave', '.file-box-caption', function(e) {
+    var originalName = $(this).parent().find("h1.fileName").text();
+    $(this).find("h1 input").val(originalName.substr(0, originalName.lastIndexOf(".")));
+	}); //E N D  R e n a m e  S u p p o r t
+  
   
   
   /*
@@ -141,13 +165,9 @@ $(function() {
 		$(".FillmeWithFiles").find(".FileParent .fileDL").each(function(i, row) {
 			if ($(row).hasClass("selected")) {
 				ids.push($(row).parent().data("id"));
-				$(row).remove();
 			}
 		});
-		deleteFiles(ids, function(e) {
-      generateTableRows();
-      $("#spinner").toggleClass("hidden");
-    });
+		deleteFiles(ids);
 	});
   
   //group   DOWNLOAD   button click
@@ -169,6 +189,7 @@ $(function() {
   
   //Toggle selection
 	$(document).on('click', '.selectFile', function(e) {
+    e.preventDefault();
     $(this).parent().closest('.fileDL').toggleClass("selected");
 	});//E N D  M u l t i  F i l e  B u t t o n s
   
@@ -176,21 +197,22 @@ $(function() {
   /*
   ---------------- I n d i v i d u a l  F i l e  B u t t o n s ----------------
   */
-	//on click of delete buttons in table rows
+	//on click of individual DELETE buttons
 	$(document).on('click', '.file-box-caption-content .delete', function(e) {
 		e.stopPropagation();
+    e.preventDefault();
 		$("#spinner").toggleClass("hidden");
 		//get this row's id and delete the row
 		var id = $(this).closest(".FileParent").data("id");
-		$(this).closest(".FileParent").remove();
 		//delete the actual file
 		deleteFiles([id], function(e) {
 			$("#spinner").toggleClass("hidden");
 		});
 	});
-	//on click of download buttons in table rows
+	//on click of individual DOWNLOAD buttons 
 	$(document).on('click', '.file-box-caption-content .download', function(e) {
 		e.stopPropagation();
+    e.preventDefault();
 		$("#spinner").toggleClass("hidden");
 		//get this row's id
 		var id = $(this).closest(".FileParent").data("id");

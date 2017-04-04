@@ -4,14 +4,6 @@
   height:350px;
 }
 
-.fileBlock1{
-  background-color: black;
-}
-
-.fileBlock2{
-  background-color: #282828;
-}
-
 .fileName{
   margin:0;
   padding:10px;
@@ -20,6 +12,10 @@
   text-align: center;
   font-weight: 700;
   font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.FileParent:nth-child(even){
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .borderLine{
@@ -52,7 +48,7 @@
 }
 
 .project-category:hover{
-  color: rgb(103, 227, 242);
+  color: #67e3f2;
   text-decoration: none;
 }
 
@@ -78,6 +74,7 @@ h1.Check:active, h1.Check:focus{
 
 .fileName input{
   text-align: center;
+  width:80%;
 }
 
 #upload-file {

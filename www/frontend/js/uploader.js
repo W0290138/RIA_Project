@@ -1,5 +1,6 @@
 
 $(function() {
+    
   /*
   ----------------  F i l e  T e m p l a t e ----------------
   */
@@ -103,12 +104,21 @@ $(function() {
 			//append the file extension to the name so that we know what type of file it is
 			//the extension is stored in a data-extension attribute
 			names.push($(e.target).val() + $(e.target).data("extension"));
-			//update the file
-			updateFiles(ids, names, function(e) {
-        $("#spinner").toggleClass("hidden");
-				generateTableRows();
-			});
+			
+            //check if the file exists, this is async
+            debugger
+            if(!fileAlreadyExist(names))
+            {
+                
+                //update the file
+                updateFiles(ids, names, function(e) {
+                //$("#spinner").toggleClass("hidden");
+                    generateTableRows();
+                });
+            }
+            $("#spinner").toggleClass("hidden");
 		}
+         //$("#spinner").toggleClass("hidden");
 	});
   //reset the value on mouse out - only one name can be changed at a time. Changes are lost if not saved
   $(document).on('mouseleave', '.file-box-caption', function(e) {
@@ -116,7 +126,45 @@ $(function() {
     $(this).find("h1 input").val(originalName.substr(0, originalName.lastIndexOf(".")));
 	}); //E N D  R e n a m e  S u p p o r t
   
-  
+    //If check if files exists
+    function fileAlreadyExist(newFileName)
+    {
+           
+        var exist= false;
+       
+        
+         $.ajax({
+          url:" php/getFiles.php?XDEBUG_SESSION_START=xdebug",
+          dataType: 'json',
+          async:false,
+          success: function(data)
+            {
+                 
+              data.forEach(function(file)
+                {
+                   
+//            //If file areadly exists dont continue;
+                 
+                if(file.name == newFileName)
+                    {
+                        exist =true;
+                    }
+            
+                })
+            }
+         });
+        
+        if (exist)
+            {
+
+                    vex.dialog.alert("File with that name already exists");
+                
+            }
+        
+        return exist;
+        
+    
+                }//end function
   
   /*
   ---------------- U p l o a d e r  f u n c t i o n s ----------------
@@ -135,7 +183,12 @@ $(function() {
 		//make some form data to send over
 		var formData = new FormData();
 		$($("#upload-file").prop("files")).each(function(i, file) {
-			formData.append("file " + i, file);
+            debugger;
+			  if(!fileAlreadyExist(file.name))
+                {
+                     
+                    formData.append("file " + i, file);
+                }
 		});
 		//make an ajax call to the upload script
 		$.ajax({

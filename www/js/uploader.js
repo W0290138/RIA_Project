@@ -1,6 +1,7 @@
 $(function() {
 
 	//when the select all checkbox is clicked, toggle all the checkboxes
+  
 	$(".header-table .checkbox").click(function() {
 		if ($(this).hasClass("unchecked")) {
 			$(this).removeClass("unchecked");
@@ -46,14 +47,59 @@ $(function() {
 		return row;
 	}
 
+    //Here we are going to make sure there are no same names
+    function fileAlreadyExist(newFileName)
+    {
+           
+        var exist= false;
+       
+        
+         $.ajax({
+          url:" php/getFiles.php?XDEBUG_SESSION_START=xdebug",
+          dataType: 'json',
+          async:false,
+          success: function(data)
+            {
+                 
+              data.forEach(function(file)
+                {
+                   
+//            //If file areadly exists dont continue;
+                 
+                if(file.name == newFileName)
+                    {
+                        exist =true;
+                    }
+            
+                })
+            }
+         });
+        
+        if (exist)
+            {
+                alert("A file with the same name exists, please change your file name before uploading");
+            }
+        
+        return exist;
+        
+    
+                }//end function
+                      
+    
+            
+
+    
+    
 	//populate the table with the most up-to-date rows
 	function generateTableRows() {
+        
 		$.post("php/getFiles.php?XDEBUG_SESSION_START=xdebug", function(data) {
 			$(".uploader-table tbody").html("");
 			JSON.parse(data).forEach(function(file) {
 				$(".uploader-table tbody").append(tableRowTemplate(file));
 			}, "json");
 		});
+        $("#loader").hide();
 	}
 
 	//invoke this on load
@@ -65,12 +111,18 @@ $(function() {
 		//make some form data to send over
 		var formData = new FormData();
 		$($("#upload-file").prop("files")).each(function(i, file) {
-			formData.append("file " + i, file);
+          
+            if(!fileAlreadyExist(file.name))
+                {
+                     
+                    formData.append("file " + i, file);
+                }
+                
 		});
 		//make an ajax call to the upload script
 		$.ajax({
 			url: "php/uploadFile.php?XDEBUG_SESSION_START=xdebug",
-			dataType: 'text',
+	 		dataType: 'text',
 			cache: false,
 			contentType: false,
 			processData: false,
@@ -78,8 +130,11 @@ $(function() {
 			type: 'post'
 		}).done(function(e) {
 			//generate the new table rows
+            
 			generateTableRows();
+            
 		});
+        
 	});
 
 	function deleteFiles(rowIDs, callback) {
@@ -103,18 +158,23 @@ $(function() {
 	$(document).on('click', '.uploader-table .delete', function(e) {
 		e.stopPropagation();
 		//TODO: show a loader
+        $("#loader").show();
 		//get this row's id and delete the row
 		var id = $(this).closest("tr").data("id");
 		$(this).closest("tr").remove();
 		//delete the actual file
 		deleteFiles([id], function(e) {
 			//TODO: hide a loader here
+            
+            $("#loader").hide();
 		});
 	});
 
 	//for the group delete button click
 	$(".group-buttons .delete").click(function() {
-		//TODO: show a loader
+		
+        $("#loader").show();
+        
 		//push all the active ids to an array and remove the rows
 		var ids = [];
 		$(".uploader-table tbody").find("tr").each(function(i, row) {
@@ -125,7 +185,8 @@ $(function() {
 		});
 		//delete them all
 		deleteFiles(ids, function(e) {
-			//TODO: hide a loader here
+			
+            $("#loader").hide();
 		});
 	});
 
@@ -136,18 +197,24 @@ $(function() {
 
 	//on click of download buttons in table rows
 	$(document).on('click', '.uploader-table .download', function(e) {
+       
 		e.stopPropagation();
 		//TODO: show a loader
+        $("#loader").show();
+        
 		//get this row's id
 		var id = $(this).closest("tr").data("id");
 		//download the file
 		downloadFiles([id], function(e) {
 			//TODO: hide a loader here
+            //It never hits here so i put hide in outside function
 		});
+        $("#loader").hide();
 	});
 
 	$(".group-buttons .download").click(function() {
 		//push all the ids to an array
+        
 		var ids = [];
 		$(".uploader-table tbody").find("tr").each(function(i, row) {
 			if (!$(row).find(".checkbox").hasClass("unchecked"))
@@ -164,6 +231,7 @@ $(function() {
 			//don't submit the form!
 			e.preventDefault();
 			//TODO: show a loader
+            $("#loader").show();
 			//get this input
 			var nameInput = e.target;
 			//push it's id an name to arrays
@@ -174,9 +242,13 @@ $(function() {
 			//the extension is stored in a data-extension attribute
 			names.push($(e.target).val() + $(e.target).data("extension"));
 			//update the file
-			updateFiles(ids, names, function(e) {
-				//TODO: hide a loader here
-			});
+			if(!fileAlreadyExist(names))
+                {
+                    updateFiles(ids, names, function(e) {
+                        //TODO: hide a loader here
+                        $("#loader").hide();
+                    });
+                }
 		}
 	});
 
